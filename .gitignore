@@ -42,9 +42,6 @@ yarn-error.log*
 # jest test result report
 junit.xml
 
-# ignore npm lock file
-package-lock.json
-
 # ignore hook init script
 .husky/.hook_init
 
