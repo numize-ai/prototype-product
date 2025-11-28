@@ -357,7 +357,7 @@ export const BlockConfigPanel: React.FC<BlockConfigPanelProps> = ({ blockType, c
   );
 
   const renderConfigForType = () => {
-    if (!config || config.type !== blockType) {
+    if (config == null || config.type !== blockType) {
       return <p className="text-sm text-muted-foreground">No configuration available for this block type.</p>;
     }
 

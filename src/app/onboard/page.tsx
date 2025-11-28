@@ -66,9 +66,9 @@ const DataTeamOnboardingPage: React.FC = () => {
   const [semanticSlices, setSemanticSlices] = useState<SemanticSlice[]>([
     {
       id: "slice-1",
-      name: "Marketing Analytics",
-      team: "marketing",
-      description: "Marketing team data access slice",
+      name: "Product Analytics",
+      team: "product",
+      description: "Product team data access slice",
       models: [],
       metrics: [],
       dimensions: [],
@@ -209,8 +209,8 @@ const DataTeamOnboardingPage: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">
-          <h1 className="text-3xl font-bold text-slate-900">Data Team Onboarding</h1>
-          <p className="text-lg text-slate-600">Set up your AI-native analytics platform in 4 simple steps</p>
+          <h1 className="text-3xl font-bold text-slate-900">Product Analytics Setup</h1>
+          <p className="text-lg text-slate-600">Empower your product team with AI-driven insights and analytics in 4 simple steps</p>
         </div>
 
         {/* Stepper */}

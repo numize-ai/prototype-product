@@ -47,7 +47,7 @@ const EditDigestPage: React.FC = () => {
   const [isActive, setIsActive] = useState(digest?.isActive ?? true);
   const [blocks, setBlocks] = useState<DigestBlock[]>(digest?.blocks ?? []);
 
-  if (!digest) {
+  if (digest == null) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-16rem)]">
         <Card className="p-8">

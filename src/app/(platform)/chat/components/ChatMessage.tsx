@@ -15,7 +15,7 @@ import { ExportToSheetsDialog } from "./ExportToSheetsDialog";
 import { ReasoningPanel } from "./ReasoningPanel";
 
 import { motion } from "framer-motion";
-import { Bot, Database, User } from "lucide-react";
+import { Bot, Database, User, Wrench } from "lucide-react";
 import Image from "next/image";
 
 interface ChatMessageProps {
@@ -46,28 +46,53 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       )}
 
       <div className={`flex flex-col gap-2 ${isUser ? "items-end" : "items-start"} max-w-3xl w-full`}>
-        {/* Data sources badge (for AI responses with multi-source data) */}
-        {!isUser && message.dataSources !== undefined && message.dataSources.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            className="flex items-center gap-2 flex-wrap"
-          >
-            <div className="flex items-center gap-1.5 text-xs text-slate-600">
-              <Database className="size-3" />
-              <span className="font-medium">Data sources:</span>
-            </div>
-            {message.dataSources.map((source) => (
-              <Badge key={source.id} variant="outline" className="gap-1.5 py-1">
-                <div className="w-4 h-4 rounded overflow-hidden shrink-0">
-                  <Image src={source.icon} alt={source.name} width={16} height={16} className="object-contain" />
-                </div>
-                <span>{source.name}</span>
-              </Badge>
-            ))}
-          </motion.div>
-        )}
+        {/* Data sources and Tools badges (for AI responses) */}
+        {!isUser &&
+          ((message.dataSources !== undefined && message.dataSources.length > 0) ||
+            (message.tools !== undefined && message.tools.length > 0)) && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="flex items-center gap-4 flex-wrap"
+            >
+              {/* Data sources */}
+              {message.dataSources !== undefined && message.dataSources.length > 0 && (
+                <>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                    <Database className="size-3" />
+                    <span className="font-medium">Data sources:</span>
+                  </div>
+                  {message.dataSources.map((source) => (
+                    <Badge key={source.id} variant="outline" className="gap-1.5 py-1">
+                      <div className="w-4 h-4 rounded overflow-hidden shrink-0">
+                        <Image src={source.icon} alt={source.name} width={16} height={16} className="object-contain" />
+                      </div>
+                      <span>{source.name}</span>
+                    </Badge>
+                  ))}
+                </>
+              )}
+
+              {/* Tools */}
+              {message.tools !== undefined && message.tools.length > 0 && (
+                <>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                    <Wrench className="size-3" />
+                    <span className="font-medium">Tools:</span>
+                  </div>
+                  {message.tools.map((tool) => (
+                    <Badge key={tool.id} variant="outline" className="gap-1.5 py-1">
+                      <div className="w-4 h-4 rounded overflow-hidden shrink-0">
+                        <Image src={tool.icon} alt={tool.name} width={16} height={16} className="object-contain" />
+                      </div>
+                      <span>{tool.name}</span>
+                    </Badge>
+                  ))}
+                </>
+              )}
+            </motion.div>
+          )}
 
         {/* Message bubble */}
         <Card

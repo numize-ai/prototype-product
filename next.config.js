@@ -56,7 +56,6 @@ const basicConfig = {
   compiler: {
     emotion: true,
   },
-  transpilePackages: ["@numize/ui"],
 };
 
 /** @type {import('next').NextConfig} */

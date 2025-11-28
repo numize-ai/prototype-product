@@ -40,24 +40,6 @@ interface DbtProjectStepProps {
 const MOCK_MODELS: DbtModel[] = [
   {
     id: "1",
-    name: "marts_marketing__campaigns",
-    schema: "marts_marketing",
-    description: "Marketing campaign performance metrics",
-    tags: ["marketing", "campaigns"],
-    columns: 24,
-    selected: true,
-  },
-  {
-    id: "2",
-    name: "marts_marketing__user_acquisition",
-    schema: "marts_marketing",
-    description: "User acquisition funnel and sources",
-    tags: ["marketing", "acquisition"],
-    columns: 18,
-    selected: true,
-  },
-  {
-    id: "3",
     name: "marts_product__feature_usage",
     schema: "marts_product",
     description: "Product feature adoption and usage patterns",
@@ -66,7 +48,52 @@ const MOCK_MODELS: DbtModel[] = [
     selected: true,
   },
   {
+    id: "2",
+    name: "marts_product__user_journeys",
+    schema: "marts_product",
+    description: "User journey tracking and funnel analysis",
+    tags: ["product", "journeys"],
+    columns: 28,
+    selected: true,
+  },
+  {
+    id: "3",
+    name: "marts_product__conversion_funnels",
+    schema: "marts_product",
+    description: "Conversion funnel metrics and drop-off analysis",
+    tags: ["product", "conversion"],
+    columns: 22,
+    selected: true,
+  },
+  {
     id: "4",
+    name: "marts_product__feature_metrics",
+    schema: "marts_product",
+    description: "Feature performance and engagement metrics",
+    tags: ["product", "metrics"],
+    columns: 19,
+    selected: true,
+  },
+  {
+    id: "5",
+    name: "marts_marketing__campaigns",
+    schema: "marts_marketing",
+    description: "Marketing campaign performance metrics",
+    tags: ["marketing", "campaigns"],
+    columns: 24,
+    selected: false,
+  },
+  {
+    id: "6",
+    name: "marts_marketing__user_acquisition",
+    schema: "marts_marketing",
+    description: "User acquisition funnel and sources",
+    tags: ["marketing", "acquisition"],
+    columns: 18,
+    selected: false,
+  },
+  {
+    id: "7",
     name: "marts_finance__revenue",
     schema: "marts_finance",
     description: "Revenue metrics and financial KPIs",
@@ -75,7 +102,7 @@ const MOCK_MODELS: DbtModel[] = [
     selected: false,
   },
   {
-    id: "5",
+    id: "8",
     name: "staging__raw_events",
     schema: "staging",
     description: "Raw event data from tracking",
@@ -118,13 +145,13 @@ const DbtProjectStep: React.FC<DbtProjectStepProps> = ({ config, onChange, onImp
     e.stopPropagation();
     setDragActive(false);
 
-    if (e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files[0] != null) {
       handleFileUpload(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
+    if (e.target.files?.[0] != null) {
       handleFileUpload(e.target.files[0]);
     }
   };
@@ -192,7 +219,7 @@ const DbtProjectStep: React.FC<DbtProjectStepProps> = ({ config, onChange, onImp
           </div>
           <div>
             <h2 className="text-2xl font-bold text-slate-900">Link dbt Project</h2>
-            <p className="text-sm text-slate-600">Import your dbt project to discover models, metrics, and lineage</p>
+            <p className="text-sm text-slate-600">Import your dbt project to discover product analytics models and metrics</p>
           </div>
         </div>
       </div>
@@ -244,12 +271,12 @@ const DbtProjectStep: React.FC<DbtProjectStepProps> = ({ config, onChange, onImp
                 />
                 <FileJson className="size-12 text-slate-400 mx-auto mb-3" />
                 <p className="text-sm font-semibold text-slate-900 mb-1">
-                  {config.manifestFile ? config.manifestFile.name : "Drop your manifest.json here"}
+                  {config.manifestFile != null ? config.manifestFile.name : "Drop your manifest.json here"}
                 </p>
                 <p className="text-xs text-slate-600">or click to browse</p>
               </div>
 
-              {config.manifestFile && (
+              {config.manifestFile != null && (
                 <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-md">
                   <CheckCircle2 className="size-5 text-green-600 shrink-0" />
                   <div className="flex-1">
@@ -459,10 +486,9 @@ const DbtProjectStep: React.FC<DbtProjectStepProps> = ({ config, onChange, onImp
                 Tip
               </Badge>
               <div className="flex-1">
-                <p className="text-sm text-purple-900 font-medium">Recommend starting with marts models</p>
+                <p className="text-sm text-purple-900 font-medium">Product models are pre-selected for you</p>
                 <p className="text-xs text-purple-700 mt-1">
-                  Models in the "marts" schema are typically well-structured and business-ready. You can always add more
-                  models later.
+                  Models in the "marts_product" schema provide feature usage, user journeys, conversion funnels, and engagement metrics. You can always add more models later.
                 </p>
               </div>
             </div>

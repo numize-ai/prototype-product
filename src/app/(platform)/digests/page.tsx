@@ -149,7 +149,7 @@ const DigestsPage: React.FC = () => {
 
   const handleDuplicate = (id: string) => {
     const digest = digests.find((d) => d.id === id);
-    if (digest) {
+    if (digest != null) {
       const newDigest: Digest = {
         ...digest,
         id: `${digest.id}-copy-${Date.now()}`,

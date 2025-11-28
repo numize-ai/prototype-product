@@ -89,13 +89,13 @@ export const PageProperties: React.FC<PagePropertiesProps> = ({
       <div className="flex items-center gap-1 text-xs text-gray-500">
         <span>{blockCount} blocks</span>
       </div>
-      {lastExecutedAt && (
+      {lastExecutedAt != null && (
         <div className="flex items-center gap-1 text-xs text-gray-500">
           <Clock className="size-3" />
           <span>Last: {lastExecutedAt.toLocaleDateString()}</span>
         </div>
       )}
-      {nextExecutionAt && (
+      {nextExecutionAt != null && (
         <div className="flex items-center gap-1 text-xs text-gray-500">
           <Calendar className="size-3" />
           <span>Next: {nextExecutionAt.toLocaleDateString()}</span>

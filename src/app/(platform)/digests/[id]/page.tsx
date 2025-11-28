@@ -25,7 +25,7 @@ const getBlockIcon = (blockType: string) => {
     table: Activity,
     insight: Lightbulb,
   };
-  return iconMap[blockType] || BarChart3;
+  return iconMap[blockType] ?? BarChart3;
 };
 
 const getBlockColor = (blockType: string) => {
@@ -42,9 +42,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ blockContext, onClose }) 
   const [messages, setMessages] = useState<Array<{ role: "assistant" | "user"; content: string }>>([
     {
       role: "assistant",
-      content: blockContext
-        ? `I'm here to help you understand the "${blockContext.title}" insights. What would you like to know?`
-        : "How can I help you with this digest?",
+      content:
+        blockContext != null
+          ? `I'm here to help you understand the "${blockContext.title}" insights. What would you like to know?`
+          : "How can I help you with this digest?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -85,7 +86,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ blockContext, onClose }) 
       </div>
 
       {/* Block Context Card */}
-      {blockContext && (
+      {blockContext != null && (
         <div className="mx-4 mt-4 mb-2">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -163,7 +164,7 @@ const DigestDetailPage: React.FC = () => {
   const [selectedBlock, setSelectedBlock] = useState<DigestBlock | undefined>(undefined);
   const [digestTitle, setDigestTitle] = useState(digest?.title || "");
 
-  if (!digest) {
+  if (digest == null) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-16rem)]">
         <div className="text-center">
@@ -184,7 +185,7 @@ const DigestDetailPage: React.FC = () => {
 
   const handleDeepDive = (blockId: string) => {
     const block = digest.blocks.find((b) => b.id === blockId);
-    if (block) {
+    if (block != null) {
       setSelectedBlock(block);
       setSplitScreenMode(true);
     }
@@ -233,8 +234,8 @@ const DigestDetailPage: React.FC = () => {
             recurrence={digest.recurrence}
             deliveryMethod={digest.deliveryMethod}
             isActive={digest.isActive}
-            {...(digest.lastExecutedAt && { lastExecutedAt: digest.lastExecutedAt })}
-            {...(digest.nextExecutionAt && { nextExecutionAt: digest.nextExecutionAt })}
+            {...(digest.lastExecutedAt != null && { lastExecutedAt: digest.lastExecutedAt })}
+            {...(digest.nextExecutionAt != null && { nextExecutionAt: digest.nextExecutionAt })}
             blockCount={digest.blocks.length}
           />
 

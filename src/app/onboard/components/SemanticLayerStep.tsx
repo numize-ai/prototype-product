@@ -104,7 +104,7 @@ const SemanticLayerStep: React.FC<SemanticLayerStepProps> = ({ slices, onChange,
 
   const handleAddItem = (sliceId: string, field: "dimensions" | "metrics", value: string) => {
     const slice = slices.find((s) => s.id === sliceId);
-    if (!slice || !value.trim()) return;
+    if (slice == null || !value.trim()) return;
 
     const newItems = [...slice[field], value.trim()];
     handleUpdateSlice(sliceId, { [field]: newItems });
@@ -112,7 +112,7 @@ const SemanticLayerStep: React.FC<SemanticLayerStepProps> = ({ slices, onChange,
 
   const handleRemoveItem = (sliceId: string, field: "dimensions" | "metrics", index: number) => {
     const slice = slices.find((s) => s.id === sliceId);
-    if (!slice) return;
+    if (slice == null) return;
 
     const newItems = slice[field].filter((_, i) => i !== index);
     handleUpdateSlice(sliceId, { [field]: newItems });
@@ -120,7 +120,7 @@ const SemanticLayerStep: React.FC<SemanticLayerStepProps> = ({ slices, onChange,
 
   const handleToggleModel = (sliceId: string, model: string) => {
     const slice = slices.find((s) => s.id === sliceId);
-    if (!slice) return;
+    if (slice == null) return;
 
     const models = slice.models.includes(model) ? slice.models.filter((m) => m !== model) : [...slice.models, model];
     handleUpdateSlice(sliceId, { models });
@@ -151,6 +151,23 @@ const SemanticLayerStep: React.FC<SemanticLayerStepProps> = ({ slices, onChange,
           </div>
         </div>
       </div>
+
+      {/* Product Analytics Banner */}
+      <Card className="border-indigo-200 bg-gradient-to-r from-indigo-50 to-blue-50">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center shrink-0">
+              <Layers className="size-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-indigo-900 font-bold">Product Analytics Setup</p>
+              <p className="text-xs text-indigo-700 mt-1">
+                This onboarding is configured for your product team with pre-selected models for feature usage, user journeys, conversion funnels, and engagement metrics.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Info Card */}
       <Card className="border-blue-200 bg-blue-50/30">

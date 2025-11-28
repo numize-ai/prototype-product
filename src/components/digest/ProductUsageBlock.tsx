@@ -118,7 +118,7 @@ export const ProductUsageBlock: React.FC<ProductUsageBlockProps> = ({ title, res
     },
   ];
 
-  if (!usageData) {
+  if (usageData == null) {
     return (
       <div className="group relative pl-6">
         <BlockHandle onClick={handleHandleClick} />
@@ -158,7 +158,7 @@ export const ProductUsageBlock: React.FC<ProductUsageBlockProps> = ({ title, res
               {hasConfidence && <span>{(result.confidenceScore! * 100).toFixed(0)}% confidence</span>}
             </div>
           </div>
-          {onDeepDive && (
+          {onDeepDive != null && (
             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
               <Button variant="ghost" size="sm" onClick={onDeepDive}>
                 <MessageSquare className="size-4 mr-1" />

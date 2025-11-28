@@ -48,7 +48,7 @@ const InsightTypeBadge: React.FC<{ insightType: "negative" | "neutral" | "positi
 export const InsightBlock: React.FC<InsightBlockProps> = ({ title, result, onDeepDive }) => {
   const { insightData } = result;
 
-  if (!insightData) {
+  if (insightData == null) {
     return (
       <BaseBlock
         title={title}
@@ -108,7 +108,7 @@ export const InsightBlock: React.FC<InsightBlockProps> = ({ title, result, onDee
         )}
 
         {/* Recommendations */}
-        {recommendations && recommendations.length > 0 && (
+        {recommendations != null && recommendations.length > 0 && (
           <div className="space-y-2 pt-2 border-t border-gray-200">
             <h4 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Recommendations</h4>
             <ul className="space-y-2">

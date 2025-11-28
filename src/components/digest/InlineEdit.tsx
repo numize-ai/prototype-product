@@ -30,7 +30,7 @@ export const InlineEdit: React.FC<InlineEditProps> = ({
   }, [value]);
 
   useEffect(() => {
-    if (isEditing && autoFocus && inputRef.current) {
+    if (isEditing && autoFocus && inputRef.current != null) {
       inputRef.current.focus();
       inputRef.current.select();
     }

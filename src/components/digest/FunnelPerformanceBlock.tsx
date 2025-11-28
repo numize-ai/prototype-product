@@ -118,7 +118,7 @@ export const FunnelPerformanceBlock: React.FC<FunnelPerformanceBlockProps> = ({ 
     },
   ];
 
-  if (!funnelData) {
+  if (funnelData == null) {
     return (
       <div className="group relative pl-6">
         <BlockHandle onClick={handleHandleClick} />
@@ -156,7 +156,7 @@ export const FunnelPerformanceBlock: React.FC<FunnelPerformanceBlockProps> = ({ 
               {hasConfidence && <span>{(result.confidenceScore! * 100).toFixed(0)}% confidence</span>}
             </div>
           </div>
-          {onDeepDive && (
+          {onDeepDive != null && (
             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
               <Button variant="ghost" size="sm" onClick={onDeepDive}>
                 <MessageSquare className="size-4 mr-1" />

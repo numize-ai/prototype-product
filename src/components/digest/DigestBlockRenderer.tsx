@@ -17,12 +17,12 @@ interface DigestBlockRendererProps {
 
 export const DigestBlockRenderer: React.FC<DigestBlockRendererProps> = ({ block, onDeepDive }) => {
   const handleDeepDive = () => {
-    if (onDeepDive) {
+    if (onDeepDive != null) {
       onDeepDive(block.id);
     }
   };
 
-  if (!block.lastExecution) {
+  if (block.lastExecution == null) {
     return (
       <div className="p-8 text-center border border-dashed border-border rounded-lg bg-muted/20">
         <p className="text-sm font-medium text-foreground">Block not executed yet</p>

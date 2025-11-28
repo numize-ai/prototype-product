@@ -9,7 +9,21 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 
-import { AlertCircle, CheckCircle2, Loader2, Mail, ShoppingCart, Workflow, Zap } from "lucide-react";
+import {
+  AlertCircle,
+  BarChart3,
+  CheckCircle2,
+  Github,
+  LayoutGrid,
+  Loader2,
+  Mail,
+  MessageSquare,
+  ShoppingCart,
+  Trello,
+  Workflow,
+  Zap,
+} from "lucide-react";
+import Image from "next/image";
 
 export interface ToolConfig {
   id: string;
@@ -28,29 +42,65 @@ interface ToolsConfigurationStepProps {
 
 const AVAILABLE_TOOLS = [
   {
-    id: "brevo",
-    name: "Brevo",
-    description: "Email marketing automation - Create segments, send campaigns, manage contacts",
-    icon: Mail,
-    color: "bg-emerald-50 border-emerald-200",
-    category: "Marketing",
+    id: "intercom",
+    name: "Intercom",
+    description:
+      "Customer messaging platform - Analyze user behavior, send targeted messages, track product engagement",
+    icon: MessageSquare,
+    color: "bg-blue-50 border-blue-200",
+    category: "Product & Support",
     requiresApiKey: true,
-    placeholder: "brevo_api_key_xxxxx",
+    placeholder: "intercom_api_key_xxxxx",
   },
   {
-    id: "hubspot",
-    name: "HubSpot",
-    description: "CRM and marketing automation - Manage contacts, deals, and marketing workflows",
-    icon: ShoppingCart,
-    color: "bg-orange-50 border-orange-200",
-    category: "Sales & Marketing",
+    id: "mixpanel",
+    name: "Mixpanel",
+    description: "Product analytics platform - Track user behavior, analyze funnels, and measure feature adoption",
+    icon: BarChart3,
+    logo: "/mixpanel.png",
+    color: "bg-purple-50 border-purple-200",
+    category: "Product Analytics",
     requiresApiKey: true,
-    placeholder: "hubspot_api_key_xxxxx",
+    placeholder: "mixpanel_api_key_xxxxx",
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    description:
+      "Code repository and issue tracking - Access repository data, manage issues, and track development metrics",
+    icon: Github,
+    logo: "/github.png",
+    color: "bg-slate-50 border-slate-200",
+    category: "Development",
+    requiresApiKey: true,
+    placeholder: "ghp_xxxxxxxxxxxxxxxxxxxx",
+  },
+  {
+    id: "jira",
+    name: "Jira",
+    description: "Project management and issue tracking - Manage sprints, track bugs, and analyze team velocity",
+    icon: LayoutGrid,
+    logo: "/jira.png",
+    color: "bg-blue-50 border-blue-200",
+    category: "Project Management",
+    requiresApiKey: true,
+    placeholder: "jira_api_token_xxxxx",
+  },
+  {
+    id: "trello",
+    name: "Trello",
+    description: "Visual project management - Organize tasks, track progress, and manage workflows with boards",
+    icon: Trello,
+    logo: "/trello.png",
+    color: "bg-sky-50 border-sky-200",
+    category: "Project Management",
+    requiresApiKey: true,
+    placeholder: "trello_api_key_xxxxx",
   },
   {
     id: "zapier",
     name: "Zapier",
-    description: "Workflow automation - Connect to 5000+ apps and automate tasks",
+    description: "Workflow automation - Connect to 5000+ apps and automate product workflows",
     icon: Zap,
     color: "bg-yellow-50 border-yellow-200",
     category: "Automation",
@@ -60,13 +110,35 @@ const AVAILABLE_TOOLS = [
   {
     id: "n8n",
     name: "n8n",
-    description: "Self-hosted workflow automation - Create custom integrations",
+    description: "Self-hosted workflow automation - Create custom product integrations",
     icon: Workflow,
     color: "bg-purple-50 border-purple-200",
     category: "Automation",
     requiresApiKey: false,
     requiresEndpoint: true,
     placeholder: "https://n8n.yourcompany.com",
+  },
+  {
+    id: "hubspot",
+    name: "HubSpot",
+    description: "CRM and marketing automation - Manage contacts, deals, and marketing workflows",
+    icon: ShoppingCart,
+    logo: "/hubspot.jpeg",
+    color: "bg-orange-50 border-orange-200",
+    category: "Sales & Marketing",
+    requiresApiKey: true,
+    placeholder: "hubspot_api_key_xxxxx",
+  },
+  {
+    id: "brevo",
+    name: "Brevo",
+    description: "Email marketing automation - Create segments, send campaigns, manage contacts",
+    icon: Mail,
+    logo: "/brevo.png",
+    color: "bg-emerald-50 border-emerald-200",
+    category: "Marketing",
+    requiresApiKey: true,
+    placeholder: "brevo_api_key_xxxxx",
   },
 ];
 
@@ -80,7 +152,7 @@ const ToolsConfigurationStep: React.FC<ToolsConfigurationStepProps> = ({ config,
 
     if (toolIndex >= 0) {
       const existing = updatedConfig[toolIndex];
-      if (existing) {
+      if (existing != null) {
         updatedConfig[toolIndex] = { ...existing, enabled: !existing.enabled };
       }
     } else {
@@ -99,7 +171,7 @@ const ToolsConfigurationStep: React.FC<ToolsConfigurationStepProps> = ({ config,
 
     if (toolIndex >= 0) {
       const existing = updatedConfig[toolIndex];
-      if (existing) {
+      if (existing != null) {
         updatedConfig[toolIndex] = {
           id: existing.id,
           name: existing.name,
@@ -159,7 +231,7 @@ const ToolsConfigurationStep: React.FC<ToolsConfigurationStepProps> = ({ config,
         const toolIndex = updatedConfig.findIndex((tool) => tool.id === toolId);
         if (toolIndex >= 0) {
           const existing = updatedConfig[toolIndex];
-          if (existing) {
+          if (existing != null) {
             updatedConfig[toolIndex] = {
               id: existing.id,
               name: existing.name,
@@ -222,9 +294,9 @@ const ToolsConfigurationStep: React.FC<ToolsConfigurationStepProps> = ({ config,
             <Zap className="size-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">Configure AI Agent Tools</h2>
+            <h2 className="text-2xl font-bold text-slate-900">Configure Product Tools</h2>
             <p className="text-sm text-slate-600">
-              Enable and configure external tools the AI agent can use to take actions for your business teams
+              Enable and configure tools the AI agent can use to take actions for your product team
             </p>
           </div>
         </div>
@@ -268,7 +340,11 @@ const ToolsConfigurationStep: React.FC<ToolsConfigurationStepProps> = ({ config,
                     <div
                       className={`w-10 h-10 rounded-lg flex items-center justify-center ${enabled ? "bg-white" : "bg-slate-100"}`}
                     >
-                      <IconComponent className={`size-5 ${enabled ? "text-slate-900" : "text-slate-400"}`} />
+                      {tool.logo ? (
+                        <Image src={tool.logo} alt={tool.name} width={24} height={24} className="object-contain" />
+                      ) : (
+                        <IconComponent className={`size-5 ${enabled ? "text-slate-900" : "text-slate-400"}`} />
+                      )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -357,7 +433,7 @@ const ToolsConfigurationStep: React.FC<ToolsConfigurationStepProps> = ({ config,
                       )}
                     </Button>
 
-                    {testResult && (
+                    {testResult != null && (
                       <div className="flex items-center gap-1.5">
                         {testResult.success ? (
                           <>
@@ -388,10 +464,11 @@ const ToolsConfigurationStep: React.FC<ToolsConfigurationStepProps> = ({ config,
               How it works
             </Badge>
             <div className="flex-1">
-              <p className="text-sm text-blue-900 font-medium">AI-powered actions for your business teams</p>
+              <p className="text-sm text-blue-900 font-medium">AI-powered actions for your product team</p>
               <p className="text-xs text-blue-700 mt-1">
-                When business teams ask questions, the AI agent can use these tools to take actions like creating email
-                campaigns in Brevo, updating CRM records in HubSpot, or triggering workflows in Zapier. All actions are
+                When your product team asks questions, the AI agent can use these tools to take actions like triggering
+                onboarding sequences in Intercom based on Mixpanel events, creating GitHub issues from user feedback,
+                updating Jira tickets based on product metrics, or automating workflows in Zapier. All actions are
                 logged and can be reviewed by the Data Team.
               </p>
             </div>

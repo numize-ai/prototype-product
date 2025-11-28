@@ -13,31 +13,46 @@ interface KPIOverviewBlockProps {
   onDeepDive?: () => void;
 }
 
-const TrendIcon: React.FC<{ trend: "down" | "stable" | "up" }> = ({ trend }) => {
+const TrendIcon: React.FC<{ trend: "down" | "stable" | "up"; isInverse?: boolean }> = ({ trend, isInverse }) => {
+  // For inverse metrics (like error rates), up is bad and down is good
+  const isInverseMetric = isInverse === true;
+
   if (trend === "up") {
-    return <ArrowUp className="size-4 text-green-600" />;
+    return <ArrowUp className={`size-4 ${isInverseMetric ? "text-red-600" : "text-green-600"}`} />;
   }
   if (trend === "down") {
-    return <ArrowDown className="size-4 text-red-600" />;
+    return <ArrowDown className={`size-4 ${isInverseMetric ? "text-green-600" : "text-red-600"}`} />;
   }
   return <Minus className="size-4 text-gray-400" />;
 };
 
 const MetricCard: React.FC<{ metric: MetricSnapshot }> = ({ metric }) => {
-  const changeColor = metric.change > 0 ? "text-green-600" : metric.change < 0 ? "text-red-600" : "text-gray-600";
+  // For inverse metrics (like error rates, timeouts), increases are bad (red) and decreases are good (green)
+  const isInverse = metric.isInverse ?? false;
+
+  const getChangeColor = () => {
+    if (metric.change === 0) return "text-gray-600";
+
+    const isPositiveChange = metric.change > 0;
+    const shouldBeGreen = isInverse ? !isPositiveChange : isPositiveChange;
+
+    return shouldBeGreen ? "text-green-600" : "text-red-600";
+  };
+
+  const changeColor = getChangeColor();
   const changeSign = metric.change > 0 ? "+" : "";
 
   return (
     <div className="p-4 hover:bg-gray-50 transition-colors border border-gray-100">
       <div className="flex items-start justify-between mb-2">
         <h4 className="text-sm font-medium text-gray-700">{metric.name}</h4>
-        <TrendIcon trend={metric.trend} />
+        <TrendIcon trend={metric.trend} isInverse={isInverse} />
       </div>
       <div className="space-y-1">
         <p className="text-2xl font-semibold text-gray-900">
           {metric.unit === "$" && "$"}
           {metric.value.toLocaleString()}
-          {metric.unit && metric.unit !== "$" && ` ${metric.unit}`}
+          {metric.unit !== undefined && metric.unit !== "$" && ` ${metric.unit}`}
         </p>
         <p className={`text-sm font-medium ${changeColor}`}>
           {changeSign}
@@ -46,7 +61,7 @@ const MetricCard: React.FC<{ metric: MetricSnapshot }> = ({ metric }) => {
         <p className="text-xs text-gray-500">
           Previous: {metric.unit === "$" && "$"}
           {metric.previousValue.toLocaleString()}
-          {metric.unit && metric.unit !== "$" && ` ${metric.unit}`}
+          {metric.unit !== undefined && metric.unit !== "$" && ` ${metric.unit}`}
         </p>
       </div>
     </div>
