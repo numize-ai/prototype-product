@@ -1277,4 +1277,64 @@ ORDER BY roi_score DESC;`,
       },
     ],
   },
+
+  // Exchange 1: Create digest from NPS analysis
+  "create a digest from this nps analysis": {
+    content:
+      "Perfect! I've created an **NPS Analysis - Monthly Report** digest based on our analysis. The digest includes your executive summary, key metrics, trend analysis, and root cause findings. Review the preview below and let me know if you'd like to add anything.",
+    type: "text",
+    actions: [
+      {
+        id: "preview-digest",
+        label: "Preview Digest",
+        icon: "Eye",
+        type: "view",
+        variant: "default",
+      },
+      {
+        id: "edit-schedule",
+        label: "Edit Schedule",
+        icon: "Calendar",
+        type: "schedule",
+        variant: "outline",
+      },
+      {
+        id: "activate-digest",
+        label: "Activate Digest",
+        icon: "Play",
+        type: "schedule",
+        variant: "outline",
+      },
+    ],
+  },
+
+  // Exchange 2: Add priority actions to digest
+  "add the priority actions to the digest": {
+    content:
+      "Done! I've added the **Path to Recovery** section and **Top 3 Priority Actions** table to your digest. These actions address 83.2% of detractor complaints. Your digest is now complete and ready to activate with monthly delivery.",
+    type: "text",
+    actions: [
+      {
+        id: "preview-full-digest",
+        label: "Preview Full Digest",
+        icon: "Eye",
+        type: "view",
+        variant: "default",
+      },
+      {
+        id: "activate-digest-final",
+        label: "Activate Digest",
+        icon: "Play",
+        type: "schedule",
+        variant: "default",
+      },
+      {
+        id: "schedule-delivery",
+        label: "Schedule Delivery",
+        icon: "Calendar",
+        type: "schedule",
+        variant: "outline",
+      },
+    ],
+  },
 };

@@ -14,6 +14,373 @@ interface DigestPreviewProps {
   messages: ChatMessageType[];
 }
 
+// Helper function to build NPS digest based on conversation progress
+const buildNPSDigest = (messageCount: number, messages: ChatMessageType[]): Partial<Digest> | null => {
+  const conversationText = messages
+    .filter((msg) => msg.role === "user")
+    .map((msg) => msg.content.toLowerCase())
+    .join(" ");
+
+  // Base NPS digest structure
+  const digest: Partial<Digest> = {
+    id: "preview-digest",
+    title: "NPS Analysis - Monthly Report",
+    description: "Monthly Net Promoter Score analysis with segment breakdowns, trends, and actionable insights",
+    recurrence: "monthly",
+    deliveryMethod: "in-app",
+    isActive: false,
+    blocks: [],
+  };
+
+  // Check if user has requested digest creation
+  const hasRequestedDigestCreation =
+    conversationText.includes("create") && conversationText.includes("digest") && messageCount >= 6;
+  const hasRequestedPriorityActions = conversationText.includes("priority") && conversationText.includes("action");
+
+  // If user hasn't requested digest creation yet, return null or early structure
+  if (!hasRequestedDigestCreation) {
+    return null;
+  }
+
+  // Build digest with blocks 0-6 when user requests digest creation
+  if (messageCount >= 6) {
+    digest.blocks = [
+      // Block 0: Executive Summary
+      {
+        id: "block-nps-0",
+        type: "text",
+        title: "Executive Summary",
+        order: 0,
+        lastExecution: {
+          executedAt: new Date(),
+          textContent:
+            "January 2025 NPS declined to 47 (down from 48) - our first decrease after six months of growth. Based on 15,247 respondents, root cause analysis reveals two critical issues: search relevance degradation (45.7% of complaints) and corpus gaps (37.8%). Urgent action needed on algorithm rollback and indexing backlog clearance.",
+        },
+      },
+      // Block 1: NPS Overview (KPI)
+      {
+        id: "block-nps-1",
+        type: "kpi",
+        title: "NPS Overview",
+        order: 1,
+        lastExecution: {
+          executedAt: new Date(),
+          confidenceScore: 0.92,
+          metrics: [
+            {
+              name: "Net Promoter Score",
+              value: 47,
+              change: -1.0,
+              trend: "down" as const,
+              previousValue: 48,
+            },
+            {
+              name: "Promoters",
+              value: 58.2,
+              change: -2.8,
+              trend: "down" as const,
+              previousValue: 61.0,
+              unit: "%",
+            },
+            {
+              name: "Passives + Detractors",
+              value: 41.8,
+              change: 2.8,
+              trend: "up" as const,
+              previousValue: 39.0,
+              unit: "%",
+              isInverse: true,
+            },
+            {
+              name: "NPS Forms Completed",
+              value: 15247,
+              change: 10.2,
+              trend: "up" as const,
+              previousValue: 13835,
+            },
+          ],
+          explanation:
+            "Concerning NPS decline in January with overall score dropping to 47 (down 1.0 point from December's 48). This represents our first month-over-month decrease after six months of consistent growth. Promoter percentage declined to 58.2% (-2.8 percentage points), while combined Passives + Detractors increased to 41.8% (+2.8 points), indicating growing user dissatisfaction. Despite the decline, survey engagement remains strong with 15,247 completed NPS forms (+10.2%), suggesting users are actively providing feedback about their concerns. The high response volume provides statistically significant data for root cause analysis and indicates urgent need for remediation efforts.",
+        },
+      },
+      // Block 2: NPS Trend (chart)
+      {
+        id: "block-nps-2",
+        type: "chart",
+        title: "NPS Trend (6 Months)",
+        order: 2,
+        config: {
+          type: "chart",
+          config: {
+            chartType: "line",
+            showLegend: true,
+            showDataLabels: true,
+            colorScheme: "blue",
+            height: "md",
+          },
+        },
+        lastExecution: {
+          executedAt: new Date(),
+          confidenceScore: 0.92,
+          chartData: {
+            chartType: "line",
+            labels: ["Aug '24", "Sep '24", "Oct '24", "Nov '24", "Dec '24", "Jan '25"],
+            datasets: [
+              {
+                label: "NPS Score",
+                data: [38.2, 40.1, 41.8, 42.5, 48.0, 47.0],
+                color: "#3b82f6",
+              },
+            ],
+            comparisonPeriod: "August 2024 - January 2025",
+          },
+          explanation:
+            "NPS trajectory shows strong growth from August through December 2024, climbing from 38.2 to a peak of 48.0 (+9.8 points, +25.7% improvement). However, January 2025 marks a concerning reversal with a 1-point decline to 47.0, breaking six months of consecutive gains. The December peak coincided with major platform releases (Citation Network expansion, document annotation enhancements), but January's drop suggests recent changes may have introduced issues. The decline warrants immediate investigation as it contradicts the previously sustained positive momentum and may indicate systematic problems affecting user satisfaction. Root cause analysis points to search algorithm changes deployed December 15th and mobile performance degradation as primary drivers of the downturn.",
+        },
+      },
+      // Block 3: Understanding the Decline (text)
+      {
+        id: "block-nps-3",
+        type: "text",
+        title: "Understanding the Decline",
+        order: 3,
+        lastExecution: {
+          executedAt: new Date(),
+          textContent:
+            "To understand January's NPS decline, we analyzed 127 detractor sessions (users who scored 0-6). Our investigation identified five distinct root cause categories driving user dissatisfaction. Each category represents a systematic issue affecting multiple user sessions, with some users experiencing multiple problems in a single interaction. The table below breaks down these categories by frequency, showing which issues are most prevalent among unhappy users.",
+        },
+      },
+      // Block 4: Root Cause Breakdown (table)
+      {
+        id: "block-nps-4",
+        type: "table",
+        title: "Root Cause Breakdown - Detractor Sessions",
+        order: 4,
+        lastExecution: {
+          executedAt: new Date(),
+          confidenceScore: 0.91,
+          tableData: {
+            columns: [
+              { key: "rootCause", label: "Root Cause Category", type: "text", sortable: true },
+              { key: "affectedSessions", label: "Affected Sessions", type: "number", sortable: true },
+              { key: "percentage", label: "% of Detractors", type: "percentage", sortable: true },
+              { key: "severity", label: "Severity", type: "text", sortable: true },
+              { key: "example", label: "Example Issue", type: "text", sortable: false },
+            ],
+            rows: [
+              {
+                id: "root-1",
+                cells: {
+                  rootCause: "Search Relevance Degradation",
+                  affectedSessions: 58,
+                  percentage: "45.7%",
+                  severity: "Critical",
+                  example: "Query 'jurisprudence contrat travail CDI' returned only 3 results vs 847 in November",
+                },
+              },
+              {
+                id: "root-2",
+                cells: {
+                  rootCause: "Corpus Coverage Gaps",
+                  affectedSessions: 48,
+                  percentage: "37.8%",
+                  severity: "High",
+                  example: "Missing Cour de cassation decisions from Jan 15-28 (indexing backlog)",
+                },
+              },
+              {
+                id: "root-3",
+                cells: {
+                  rootCause: "Mobile Performance Degradation",
+                  affectedSessions: 41,
+                  percentage: "32.3%",
+                  severity: "High",
+                  example: "Search results loading 4.2s on iOS vs 1.8s in December",
+                },
+              },
+              {
+                id: "root-4",
+                cells: {
+                  rootCause: "Legislative Timeline Bugs",
+                  affectedSessions: 29,
+                  percentage: "22.8%",
+                  severity: "Medium",
+                  example: "Null pointer exception on Code civil Article L1234-5 timeline queries",
+                },
+              },
+              {
+                id: "root-5",
+                cells: {
+                  rootCause: "Navigation Friction",
+                  affectedSessions: 22,
+                  percentage: "17.3%",
+                  severity: "Medium",
+                  example: "Users averaging 8.2 failed search attempts before abandonment",
+                },
+              },
+            ],
+            totalRows: 5,
+          },
+          explanation:
+            "Root cause analysis of 127 detractor sessions (NPS 0-6) identifies five primary categories of issues. The top two drivers—Search Relevance Degradation (45.7%) and Corpus Coverage Gaps (37.8%)—account for majority of user dissatisfaction. Note: Percentages exceed 100% as users can experience multiple root causes in a single session.",
+        },
+      },
+      // Block 5: Deep Dive Analysis (text)
+      {
+        id: "block-nps-5",
+        type: "text",
+        title: "Deep Dive Analysis",
+        order: 5,
+        lastExecution: {
+          executedAt: new Date(),
+          textContent:
+            "Building on the root cause categories, we conducted in-depth analysis using session replays, A/B testing, and statistical correlation studies. The findings reveal specific technical issues and their measurable impact on user experience. Search relevance degradation shows a clear 14% precision drop from algorithm changes, while corpus gaps create 2,300 failed searches daily. These aren't just complaints—they're quantifiable platform failures with direct business impact that we can measure and fix.",
+        },
+      },
+      // Block 6: Key Findings Summary (table)
+      {
+        id: "block-nps-6",
+        type: "table",
+        title: "Key Findings Summary",
+        order: 6,
+        lastExecution: {
+          executedAt: new Date(),
+          confidenceScore: 0.91,
+          tableData: {
+            columns: [
+              { key: "finding", label: "Finding Category", type: "text", sortable: false },
+              { key: "detail", label: "Key Detail", type: "text", sortable: false },
+              { key: "impact", label: "Impact/Data", type: "text", sortable: false },
+            ],
+            rows: [
+              {
+                id: "finding-1",
+                cells: {
+                  finding: "Search Relevance Degradation",
+                  detail: "Dec 15 algorithm changes reduced Code civil query accuracy by 14%",
+                  impact: "58 sessions (45.7%) - Old: 89.3% precision, New: 76.8%",
+                },
+              },
+              {
+                id: "finding-2",
+                cells: {
+                  finding: "Corpus Coverage Gaps",
+                  detail: "15,247-doc backlog affecting Cour de cassation decisions (Jan 15-28)",
+                  impact: "48 sessions (37.8%) - 2,300 daily failed searches, 73% abandon rate",
+                },
+              },
+              {
+                id: "finding-3",
+                cells: {
+                  finding: "Session Behavior Pattern",
+                  detail: "Frustrated users average 8.2 failed searches before giving up",
+                  impact: "43 sessions analyzed - repeated query reformulation attempts",
+                },
+              },
+              {
+                id: "finding-4",
+                cells: {
+                  finding: "Power User Impact",
+                  detail: "Detractors conduct 3.2x more searches than average (14.8 vs 4.6)",
+                  impact: "Most valuable segment hitting platform limitations",
+                },
+              },
+              {
+                id: "finding-5",
+                cells: {
+                  finding: "Statistical Correlation",
+                  detail: "Users encountering backlog documents give lower NPS scores",
+                  impact: "4.7x more likely to detract (r=0.73, p<0.01)",
+                },
+              },
+            ],
+            totalRows: 5,
+          },
+          explanation:
+            "Structured summary of the five key findings from analyzing 127 detractor sessions, highlighting impact data and statistical evidence.",
+        },
+      },
+    ];
+
+    // Add blocks 7-8 when user requests priority actions
+    if (messageCount >= 7 && hasRequestedPriorityActions) {
+      digest.blocks.push(
+        // Block 7: Path to Recovery (text)
+        {
+          id: "block-nps-7",
+          type: "text",
+          title: "Path to Recovery",
+          order: 7,
+          lastExecution: {
+            executedAt: new Date(),
+            textContent:
+              "Based on our root cause analysis, we've identified three high-impact actions that address 83.2% of detractor complaints. These recommendations are sequenced by urgency and readiness—the search algorithm rollback can deploy immediately, while indexing and mobile optimizations follow in the next two weeks. Engineering has validated the technical approach for each action, and we project these fixes will recover NPS to the 49-50 range by March 2025. Each recommendation includes specific timelines, expected impact, and current status to enable rapid decision-making.",
+          },
+        },
+        // Block 8: Top 3 Priority Actions (table)
+        {
+          id: "block-nps-8",
+          type: "table",
+          title: "Top 3 Priority Actions",
+          order: 8,
+          lastExecution: {
+            executedAt: new Date(),
+            confidenceScore: 0.94,
+            tableData: {
+              columns: [
+                { key: "priority", label: "Priority", type: "text", sortable: false },
+                { key: "action", label: "Recommended Action", type: "text", sortable: false },
+                { key: "timeline", label: "Timeline", type: "text", sortable: false },
+                { key: "impact", label: "Expected Impact", type: "text", sortable: false },
+                { key: "status", label: "Status", type: "text", sortable: false },
+              ],
+              rows: [
+                {
+                  id: "rec-1",
+                  cells: {
+                    priority: "🔴 URGENT",
+                    action: "Rollback search algorithm to November baseline",
+                    timeline: "Immediate (24-48 hours)",
+                    impact: "Restore search precision to 89.3% - affects 58 sessions (45.7%)",
+                    status: "Ready to deploy",
+                  },
+                },
+                {
+                  id: "rec-2",
+                  cells: {
+                    priority: "🟠 HIGH",
+                    action: "Accelerate indexing backlog clearance to 2-week timeline",
+                    timeline: "Complete by Feb 15",
+                    impact: "Resolve 2,300 daily failed searches - affects 48 sessions (37.8%)",
+                    status: "Resources allocated",
+                  },
+                },
+                {
+                  id: "rec-3",
+                  cells: {
+                    priority: "🟠 HIGH",
+                    action: "Deploy mobile performance optimization patch",
+                    timeline: "Feb 3-5 deployment",
+                    impact: "Reduce load time from 4.2s to 1.8s - affects 41 sessions (32.3%)",
+                    status: "Tested in staging",
+                  },
+                },
+              ],
+              totalRows: 3,
+            },
+            explanation:
+              "Three highest-impact recommendations based on root cause analysis. Implementing these actions addresses 83.2% of detractor complaints and is projected to recover NPS to 49-50 range by March 2025.",
+          },
+        },
+      );
+    }
+
+    return digest;
+  }
+
+  return null;
+};
+
 // Helper function to build digest based on conversation progress
 const buildDigestFromMessages = (messages: ChatMessageType[]): Partial<Digest> | null => {
   // Count user messages to determine progress
@@ -22,358 +389,8 @@ const buildDigestFromMessages = (messages: ChatMessageType[]): Partial<Digest> |
 
   if (messageCount === 0) return null;
 
-  // Base digest structure
-  const digest: Partial<Digest> = {
-    id: "preview-digest",
-    title: "Campaign Performance Digest",
-    description: "Track marketing campaign metrics and performance",
-    recurrence: "weekly",
-    deliveryMethod: "both",
-    isActive: false,
-    blocks: [],
-  };
-
-  // Message 1: User wants to create digest - show basic title
-  if (messageCount === 1) {
-    digest.title = "New Digest";
-    digest.description = "Configuring your digest...";
-    return digest;
-  }
-
-  // Message 2: User wants campaign performance metrics - add title and basic structure
-  if (messageCount === 2) {
-    digest.title = "Campaign Performance Digest";
-    digest.description = "Track marketing campaign metrics and performance";
-    digest.blocks = [
-      {
-        id: "block-preview-1",
-        type: "text",
-        title: "Overview",
-        order: 0,
-        lastExecution: {
-          executedAt: new Date(),
-          textContent: "This digest will track your campaign performance and key marketing metrics.",
-        },
-      },
-    ];
-    return digest;
-  }
-
-  // Message 3: User chooses weekly - add frequency and basic metrics
-  if (messageCount === 3) {
-    digest.recurrence = "weekly";
-    digest.blocks = [
-      {
-        id: "block-preview-1",
-        type: "text",
-        title: "Weekly Campaign Overview",
-        order: 0,
-        lastExecution: {
-          executedAt: new Date(),
-          textContent:
-            "This digest will provide weekly insights into your campaign performance, helping you track marketing metrics and identify optimization opportunities.",
-        },
-      },
-      {
-        id: "block-preview-2",
-        type: "kpi",
-        title: "Campaign Metrics",
-        order: 1,
-        lastExecution: {
-          executedAt: new Date(),
-          confidenceScore: 0.95,
-          metrics: [
-            {
-              name: "Click-Through Rate",
-              value: 3.2,
-              change: 0.4,
-              trend: "up" as const,
-              previousValue: 2.8,
-              unit: "%",
-            },
-            {
-              name: "Conversion Rate",
-              value: 4.5,
-              change: 0.3,
-              trend: "up" as const,
-              previousValue: 4.2,
-              unit: "%",
-            },
-          ],
-        },
-      },
-    ];
-    return digest;
-  }
-
-  // Message 4: User wants breakdown by channel - add detailed metrics
-  if (messageCount === 4) {
-    digest.blocks = [
-      {
-        id: "block-preview-1",
-        type: "text",
-        title: "Weekly Campaign Overview",
-        order: 0,
-        lastExecution: {
-          executedAt: new Date(),
-          textContent:
-            "This digest tracks your weekly campaign performance with detailed breakdowns by marketing channel and comparisons to previous periods.",
-        },
-      },
-      {
-        id: "block-preview-2",
-        type: "kpi",
-        title: "Campaign Metrics",
-        order: 1,
-        lastExecution: {
-          executedAt: new Date(),
-          confidenceScore: 0.95,
-          metrics: [
-            {
-              name: "Click-Through Rate",
-              value: 3.2,
-              change: 0.4,
-              trend: "up" as const,
-              previousValue: 2.8,
-              unit: "%",
-            },
-            {
-              name: "Previous Week CTR",
-              value: 2.8,
-              change: 0,
-              trend: "stable" as const,
-              previousValue: 2.8,
-              unit: "%",
-            },
-            {
-              name: "Conversion Rate",
-              value: 4.5,
-              change: 0.3,
-              trend: "up" as const,
-              previousValue: 4.2,
-              unit: "%",
-            },
-            {
-              name: "Engagement Rate",
-              value: 6.8,
-              change: 0.5,
-              trend: "up" as const,
-              previousValue: 6.3,
-              unit: "%",
-            },
-          ],
-        },
-      },
-      {
-        id: "block-preview-3",
-        type: "chart",
-        title: "Performance by Channel",
-        order: 2,
-        config: {
-          type: "chart",
-          config: {
-            chartType: "bar",
-            showLegend: true,
-            showDataLabels: true,
-            colorScheme: "multi",
-            height: "md",
-          },
-        },
-        lastExecution: {
-          executedAt: new Date(),
-          confidenceScore: 0.93,
-          chartData: {
-            chartType: "bar",
-            labels: ["Email", "Social Media", "Paid Search", "Display"],
-            datasets: [
-              {
-                label: "This Week",
-                data: [4.2, 3.8, 2.9, 2.1],
-                color: "#3b82f6",
-              },
-              {
-                label: "Last Week",
-                data: [3.9, 3.5, 2.6, 1.8],
-                color: "#94a3b8",
-              },
-            ],
-          },
-        },
-      },
-    ];
-    return digest;
-  }
-
-  // Message 5 & 6: User adds chart and alert, then confirms - complete digest
-  if (messageCount >= 5) {
-    digest.blocks = [
-      {
-        id: "block-preview-1",
-        type: "text",
-        title: "Weekly Campaign Overview",
-        order: 0,
-        lastExecution: {
-          executedAt: new Date(),
-          textContent:
-            "This digest tracks your weekly campaign performance with detailed breakdowns by marketing channel, comparisons to previous periods, and automated alerts for click-through rate thresholds.",
-        },
-      },
-      {
-        id: "block-preview-2",
-        type: "kpi",
-        title: "Campaign Metrics",
-        order: 1,
-        lastExecution: {
-          executedAt: new Date(),
-          confidenceScore: 0.95,
-          metrics: [
-            {
-              name: "Click-Through Rate",
-              value: 3.2,
-              change: 0.4,
-              trend: "up" as const,
-              previousValue: 2.8,
-              unit: "%",
-            },
-            {
-              name: "Conversion Rate",
-              value: 4.5,
-              change: 0.3,
-              trend: "up" as const,
-              previousValue: 4.2,
-              unit: "%",
-            },
-            {
-              name: "Engagement Rate",
-              value: 6.8,
-              change: 0.5,
-              trend: "up" as const,
-              previousValue: 6.3,
-              unit: "%",
-            },
-            {
-              name: "CTR Alert Threshold",
-              value: 2.0,
-              change: 0,
-              trend: "stable" as const,
-              previousValue: 2.0,
-              unit: "%",
-            },
-          ],
-        },
-      },
-      {
-        id: "block-preview-3",
-        type: "chart",
-        title: "Campaign Performance Trend",
-        order: 2,
-        config: {
-          type: "chart",
-          config: {
-            chartType: "line",
-            showLegend: true,
-            showDataLabels: false,
-            colorScheme: "blue",
-            height: "md",
-          },
-        },
-        lastExecution: {
-          executedAt: new Date(),
-          confidenceScore: 0.94,
-          chartData: {
-            chartType: "line",
-            labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
-            datasets: [
-              {
-                label: "Click-Through Rate (%)",
-                data: [2.4, 2.6, 2.8, 2.8, 3.2],
-                color: "#3b82f6",
-              },
-              {
-                label: "Conversion Rate (%)",
-                data: [3.8, 4.0, 4.1, 4.2, 4.5],
-                color: "#10b981",
-              },
-            ],
-          },
-        },
-      },
-      {
-        id: "block-preview-4",
-        type: "chart",
-        title: "Performance by Channel",
-        order: 3,
-        config: {
-          type: "chart",
-          config: {
-            chartType: "bar",
-            showLegend: true,
-            showDataLabels: true,
-            colorScheme: "multi",
-            height: "md",
-          },
-        },
-        lastExecution: {
-          executedAt: new Date(),
-          confidenceScore: 0.93,
-          chartData: {
-            chartType: "bar",
-            labels: ["Email", "Social Media", "Paid Search", "Display"],
-            datasets: [
-              {
-                label: "This Week",
-                data: [4.2, 3.8, 2.9, 2.1],
-                color: "#3b82f6",
-              },
-              {
-                label: "Last Week",
-                data: [3.9, 3.5, 2.6, 1.8],
-                color: "#94a3b8",
-              },
-            ],
-          },
-        },
-      },
-      {
-        id: "block-preview-5",
-        type: "insight",
-        title: "Campaign Performance Alert",
-        order: 4,
-        config: {
-          type: "insight",
-          config: {
-            insightTypes: ["positive"],
-            minConfidence: 0.8,
-            maxInsights: 5,
-            showRecommendations: true,
-          },
-        },
-        lastExecution: {
-          executedAt: new Date(),
-          confidenceScore: 0.91,
-          insightData: {
-            insightType: "positive",
-            summary:
-              "Campaign performance is trending positively with 3.2% CTR, well above the 2% threshold. All marketing channels showing improvement week-over-week.",
-            details: [
-              "Click-through rate increased by 0.4 percentage points (14% improvement)",
-              "Email campaigns showing strongest performance at 4.2% CTR",
-              "No alerts triggered - CTR remains above 2% threshold",
-            ],
-            recommendations: [
-              "Continue monitoring Email channel momentum for best practices",
-              "Consider reallocating budget from Display to higher-performing channels",
-              "Test similar messaging from Email campaigns across other channels",
-            ],
-            confidence: 0.91,
-          },
-        },
-      },
-    ];
-    return digest;
-  }
-
-  return digest;
+  // Build NPS digest
+  return buildNPSDigest(messageCount, messages);
 };
 
 export const DigestPreview: React.FC<DigestPreviewProps> = ({ messages }) => {
